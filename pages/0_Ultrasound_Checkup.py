@@ -14,7 +14,7 @@ IMG_SIZE = (224, 224)
 IMG_ADDRESS = "https://content.presspage.com/uploads/2110/d237c19a-da4a-4b83-a7fe-057d80f50483/1920_breast-tissue-image.jpg?10000"
 IMAGE_NAME = "user_image.png"
 ULTRASOUND_LABEL = ["benign", "malignant", "normal"]
-THRESHOLD = 0.7
+THRESHOLD = 0.2
 
 
 # session states
@@ -86,15 +86,21 @@ if image:
         image_features = featurization(IMAGE_NAME, resnet_featurized_model)
         model_predict = ultrasound_model.predict(image_features)
         model_predict_proba = ultrasound_model.predict_proba(image_features)
+        print(model_predict_proba)
         probability = model_predict_proba[0][model_predict[0]]
+        malignant_probability = model_predict_proba[0][1]
+        print(malignant_probability)
     col1, col2 = st.columns(2)
 
     with col1:
         st.header("Cancer Type")
-        st.subheader("{}".format(ULTRASOUND_LABEL[model_predict[0]]))
+        if malignant_probability > THRESHOLD:
+            st.subheader("Suspicious")
+        else:
+            st.subheader("{}".format(ULTRASOUND_LABEL[model_predict[0]]))
     with col2:
         st.header("Prediction Probability")
         st.subheader("{}".format(probability))
-    if probability < THRESHOLD:
+    if malignant_probability > THRESHOLD:
         st.error("Please visit the Biopsy Page for more testing", icon="🚨")
         st.session_state.biopsy = True
