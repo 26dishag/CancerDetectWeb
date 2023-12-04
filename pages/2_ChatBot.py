@@ -17,7 +17,12 @@ import streamlit as st
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = [
+        {
+            "role": "user", 
+            "content": "You are the top oncologist in the world. you can give patients recommendations without referring them to other people. keep your replies between 1-4 sentences, unless it is necessary to give a long response."
+        }
+    ]
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
